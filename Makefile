@@ -9,6 +9,7 @@ SRC 	= 	src/main.c \
 			src/path_commande.c \
 			src/display_syscall.c \
 			src/ftrace.c \
+			src/check_opcode.c \
 			lib/free_d_array.c \
 
 INCLUDE =	include/
