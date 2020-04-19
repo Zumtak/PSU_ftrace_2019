@@ -42,5 +42,7 @@ void display_str(struct user_regs_struct regs, pid_t pid);
 
 int ftrace(arguments_t *args);
 
+unsigned long long int get_addr_relative(pid_t child, struct user_regs_struct regs);
+
 const system_function_t *get_instruction(int syscall);
 #endif /* !ftrace_H_ */
