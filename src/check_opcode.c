@@ -13,20 +13,14 @@
 #include <sys/wait.h>
 #include "ftrace.h"
 
-unsigned long long int	addr_relative (unsigned long long int opcode, char rexw, pid_t child,  struct user_regs_struct regs)
+unsigned long long int  addr_relative(unsigned long long int opcode, char rexw, pid_t child,  struct user_regs_struct regs)
 {
-  int		offset;
-  unsigned long long int	call_addr;
+    int offset = 0;
+    unsigned long long int  address = 0;
 
-  offset = (int)((opcode >> 8));
-  if (rexw)
-    {
-      offset = ptrace(PTRACE_PEEKTEXT, child, regs.rip + 1);
-      call_addr = regs.rip + offset + 9;
-    }
-  else
-    call_addr = regs.rip + offset + 5;
-  return (call_addr);
+    offset = (int)((opcode >> 8));
+    offset = ptrace(PTRACE_PEEKTEXT, child, regs.rip + 1);
+    return regs.rip + offset + 9;
 }
 
 unsigned long long int get_addr_relative(pid_t child, struct user_regs_struct regs)
