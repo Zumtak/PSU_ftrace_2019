@@ -33,6 +33,16 @@ struct system_function_s {
 };
 typedef struct system_function_s system_function_t;
 
+enum call_type {
+    NONE = 0,
+    SYSCALL = 1,
+    RELATIVECALL = 2,
+    INDIRECTCALL = 3,
+    RETN = 4,
+    RETF = 5
+};
+typedef enum call_type call_type;
+
 arguments_t* initialize_arguments();
 void display_arguments_struct(arguments_t* arguments);
 arguments_t *manage_arguments(int argc, char **argv, char **envp);
@@ -43,6 +53,7 @@ void display_str(struct user_regs_struct regs, pid_t pid);
 int ftrace(arguments_t *args);
 
 unsigned long long int get_addr_relative(pid_t child, struct user_regs_struct regs);
+call_type get_calltype(unsigned long long int opcode);
 
 const system_function_t *get_instruction(int syscall);
 #endif /* !ftrace_H_ */

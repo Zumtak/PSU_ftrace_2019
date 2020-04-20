@@ -13,14 +13,6 @@
 #include <sys/wait.h>
 #include "ftrace.h"
 
-# define SYSCALL(opcode)        ((opcode & 0x0000FFFF) == 0x0000050f)
-# define RELCALL(opcode)	((opcode & 0xFF) == 0xe8)
-# define INDCALL(o)		((o & 0xFF) == 0xFF && (o & 0x3800) == 0x1000)
-# define CALL(op)		(SYSCALL(op) || RELCALL(op) || INDCALL(op))
-# define R_1(op)		((op & 0xFF) == 0xC3 || (op & 0xFF) == 0xC2)
-# define R_2(op)		((op & 0xFF) == 0xCA  || (op & 0xFF) == 0xCB)
-# define RET(op)		(R_1(op) || R_2(op))
-
 static int tracer_fork(pid_t child_pid)
 {
     struct user_regs_struct regs = {0};
@@ -36,17 +28,13 @@ static int tracer_fork(pid_t child_pid)
             break;
         ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
         unsigned long long int opcode = ptrace(PTRACE_PEEKTEXT, child_pid, regs.rip, regs);
-        if (SYSCALL(opcode)) {
+        if (get_calltype(opcode) == SYSCALL) {
             printf("SYSCALL Detected\n");
         }
-        if (CALL(opcode)) {
-            printf("CALL Detected\n");
+        if (get_calltype(opcode) == RELATIVECALL) {
+            printf("RELATIVE addr: 0x%llx\n", get_addr_relative(child_pid, regs));
         }
-        if (RELCALL(opcode)) {
-            printf("RELCALL Detectec\n");
-            get_addr_relative(child_pid, regs);
-        }
-        if (INDCALL(opcode)) {
+        if (get_calltype(opcode) == INDIRECTCALL) {
             printf("INDCALL Detected\n");
         }
         if (regs.orig_rax != -1)
