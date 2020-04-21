@@ -27,12 +27,12 @@ static int tracer_fork(pid_t child_pid)
         WSTOPSIG(status) != SIGTRAP)
             break;
         ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
-        unsigned long long int opcode = ptrace(PTRACE_PEEKTEXT, child_pid, regs.rip, regs);
+        unsigned long opcode = ptrace(PTRACE_PEEKTEXT, child_pid, regs.rip, regs);
         if (get_calltype(opcode) == SYSCALL) {
             printf("SYSCALL Detected\n");
         }
         if (get_calltype(opcode) == RELATIVECALL) {
-            printf("RELATIVE addr: 0x%llx\n", get_addr_relative(child_pid, regs));
+            printf("RELATIVE addr: 0x%lx\n", get_addr_relative(child_pid, regs));
         }
         if (get_calltype(opcode) == INDIRECTCALL) {
             printf("INDCALL Detected\n");

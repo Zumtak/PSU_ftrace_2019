@@ -14,7 +14,7 @@
 #include "ftrace.h"
 
 
-call_type get_calltype(unsigned long long int opcode)
+call_type get_calltype(unsigned long opcode)
 {
     if (((opcode & 0x0000FFFF) == 0x0000050f)) {
         return SYSCALL;
@@ -34,20 +34,18 @@ call_type get_calltype(unsigned long long int opcode)
     return NONE;
 }
 
-unsigned long long int  addr_relative(unsigned long long int opcode, char rexw, pid_t child,  struct user_regs_struct regs)
+unsigned long  addr_relative(unsigned long opcode, pid_t child,  struct user_regs_struct regs)
 {
     int offset = 0;
-    unsigned long long int  address = 0;
 
-    offset = (int)((opcode >> 8));
+    offset = (int)(opcode >> 8);
     offset = ptrace(PTRACE_PEEKTEXT, child, regs.rip + 1);
-    return regs.rip + offset + 9;
+    return regs.rip + offset + 5;
 }
 
-unsigned long long int get_addr_relative(pid_t child, struct user_regs_struct regs)
+unsigned long get_addr_relative(pid_t child, struct user_regs_struct regs)
 {
-    unsigned long long int opcode = ptrace(PTRACE_PEEKTEXT, child, regs.rip, regs.rip);
-    char rex = 0;
-    unsigned long long int addr = addr_relative(opcode, rex, child, regs);
+    unsigned long opcode = ptrace(PTRACE_PEEKTEXT, child, regs.rip, regs.rip);
+    unsigned long addr = addr_relative(opcode, child, regs);
     return addr;
 }
