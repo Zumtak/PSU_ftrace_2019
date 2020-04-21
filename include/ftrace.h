@@ -36,10 +36,9 @@ typedef struct system_function_s system_function_t;
 enum call_type {
     NONE = 0,
     SYSCALL = 1,
-    RELATIVECALL = 2,
-    INDIRECTCALL = 3,
-    RETN = 4,
-    RETF = 5
+    CALL = 2,
+    RETN = 3,
+    RETF = 4
 };
 typedef enum call_type call_type;
 
@@ -52,7 +51,6 @@ void display_str(struct user_regs_struct regs, pid_t pid);
 
 int ftrace(arguments_t *args);
 
-unsigned long get_addr_relative(pid_t child, struct user_regs_struct regs);
 call_type get_calltype(unsigned long opcode);
 
 const system_function_t *get_instruction(int syscall);

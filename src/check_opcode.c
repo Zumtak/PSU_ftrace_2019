@@ -19,11 +19,9 @@ call_type get_calltype(unsigned long opcode)
     if (((opcode & 0x0000FFFF) == 0x0000050f)) {
         return SYSCALL;
     }
-    if (((opcode & 0xFF) == 0xFF && (opcode & 0x3800) == 0x1000)) {
-        return INDIRECTCALL;
-    }
-    if (((opcode & 0xFF) == 0xe8)) {
-        return RELATIVECALL;
+    if (((opcode & 0xFF) == 0xFF && (opcode & 0x3800) == 0x1000) ||
+     ((opcode & 0xFF) == 0xe8)) {
+        return CALL;
     }
     if ((opcode & 0xFF) == 0xC2 || (opcode & 0xFF) == 0xC3) {
         return RETN;
@@ -32,20 +30,4 @@ call_type get_calltype(unsigned long opcode)
         return RETF;
     }
     return NONE;
-}
-
-unsigned long  addr_relative(unsigned long opcode, pid_t child,  struct user_regs_struct regs)
-{
-    int offset = 0;
-
-    offset = (int)(opcode >> 8);
-    offset = ptrace(PTRACE_PEEKTEXT, child, regs.rip + 1);
-    return regs.rip + offset + 5;
-}
-
-unsigned long get_addr_relative(pid_t child, struct user_regs_struct regs)
-{
-    unsigned long opcode = ptrace(PTRACE_PEEKTEXT, child, regs.rip, regs.rip);
-    unsigned long addr = addr_relative(opcode, child, regs);
-    return addr;
 }

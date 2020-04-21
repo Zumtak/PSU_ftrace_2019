@@ -13,6 +13,8 @@
 #include <sys/wait.h>
 #include "ftrace.h"
 
+#define UINT_MAX 4294967295
+
 static int tracer_fork(pid_t child_pid)
 {
     struct user_regs_struct regs = {0};
@@ -28,17 +30,15 @@ static int tracer_fork(pid_t child_pid)
             break;
         ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
         unsigned long opcode = ptrace(PTRACE_PEEKTEXT, child_pid, regs.rip, regs);
-        if (get_calltype(opcode) == SYSCALL) {
-            printf("SYSCALL Detected\n");
+        if (get_calltype(opcode) == CALL) {
+            ptrace(PTRACE_SINGLESTEP, child_pid, NULL, NULL);
+            wait(&status);
+            ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
+            printf("CALL addr: %llx\n", regs.rip);
         }
-        if (get_calltype(opcode) == RELATIVECALL) {
-            printf("RELATIVE addr: 0x%lx\n", get_addr_relative(child_pid, regs));
-        }
-        if (get_calltype(opcode) == INDIRECTCALL) {
-            printf("INDCALL Detected\n");
-        }
-        if (regs.orig_rax != -1)
+        if (regs.orig_rax != -1) {
             display(regs, child_pid);
+        }
     }
     status = WEXITSTATUS(status);
     dprintf(2, "+++ exited with %d +++\n", status);
