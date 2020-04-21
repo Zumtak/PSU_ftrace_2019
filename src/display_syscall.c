@@ -33,7 +33,7 @@ void display(struct user_regs_struct regs, pid_t pid)
     (void)pid;
     if (tmp == NULL)
         return;
-    dprintf(2, "%s(", tmp->name);
+    dprintf(2, "Syscall %s(", tmp->name);
     while (i < tmp->nb_arguments - 1) {
         dprintf(2, "0x%llx, ", reg_tab[i]);
         ++i;

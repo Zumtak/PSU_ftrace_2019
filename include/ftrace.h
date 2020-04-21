@@ -54,4 +54,7 @@ int ftrace(arguments_t *args);
 call_type get_calltype(unsigned long opcode);
 
 const system_function_t *get_instruction(int syscall);
+
+char *find_symbol(char *file, unsigned long long int addr);
+char *dyn_find_symbol(pid_t pid, unsigned long long int addr);
 #endif /* !ftrace_H_ */

@@ -10,6 +10,8 @@ SRC 	= 	src/main.c \
 			src/display_syscall.c \
 			src/ftrace.c \
 			src/check_opcode.c \
+			src/symbols_finder_static.c \
+			src/symbols_finder_dynamic.c \
 			lib/free_d_array.c \
 
 INCLUDE =	include/
@@ -20,6 +22,7 @@ override CFLAGS +=	-W 				\
 					-Wall			\
 					-Wextra			\
 					-I $(INCLUDE)	\
+					-lelf 			\
 
 NAME = ftrace
 

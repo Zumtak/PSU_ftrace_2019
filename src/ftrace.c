@@ -15,10 +15,11 @@
 
 #define UINT_MAX 4294967295
 
-static int tracer_fork(pid_t child_pid)
+static int tracer_fork(pid_t child_pid, char *file_path)
 {
     struct user_regs_struct regs = {0};
     int status = 1;
+    char *fname = NULL;
 
     while (!WIFEXITED(status)) {
         ptrace(PTRACE_SINGLESTEP, child_pid, NULL, NULL);
@@ -34,7 +35,13 @@ static int tracer_fork(pid_t child_pid)
             ptrace(PTRACE_SINGLESTEP, child_pid, NULL, NULL);
             wait(&status);
             ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
-            printf("CALL addr: %llx\n", regs.rip);
+            fname = find_symbol(file_path, regs.rip);
+            if (fname == NULL)
+                fname = dyn_find_symbol(child_pid, regs.rip);
+            if (fname == NULL)
+                dprintf(2, "func_0x%llx@%s\n", regs.rip, file_path);
+            else
+                dprintf(2, "Entering function %s at Ox%llx\n", fname, regs.rip);
         }
         if (regs.orig_rax != -1) {
             display(regs, child_pid);
@@ -55,7 +62,7 @@ static int fork_n_trace(arguments_t *args)
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
         return (execve(args->program_path, args->argv, args->envp));
     }
-    return (tracer_fork(child_pid));
+    return (tracer_fork(child_pid, args->program_path));
 }
 
 int ftrace(arguments_t *args)
