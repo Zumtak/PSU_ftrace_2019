@@ -19,10 +19,6 @@ static char *my_strcat(char *str1, char *str2)
 {
     char *result = malloc(strlen(str1) + strlen(str2) + 2);
 
-    if (result == NULL) {
-        fprintf(stderr, "Memory allocation error\n");
-        return (NULL);
-    }
     strcpy(result, str1);
     result[strlen(str1)] = '/';
     result[strlen(str1) + 1] = 0;
