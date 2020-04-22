@@ -60,16 +60,13 @@ static Elf *setup_elf(int fd)
     Elf *elf = NULL;
 
     if (elf_version(EV_CURRENT) == EV_NONE) {
-        fprintf(stderr, "Cannot process this ELF: %s\n", elf_errmsg(-1));
         return (NULL);
     }
     elf = elf_begin(fd, ELF_C_READ, NULL);
     if (!(elf)) {
-        fprintf(stderr, "Elf begin fail: %s\n", elf_errmsg(-1));
         return (NULL);
     }
     if (elf_kind(elf) != ELF_K_ELF) {
-        fprintf(stderr, "Type non sypporté\n");
         return (NULL);
     }
     return (elf);
