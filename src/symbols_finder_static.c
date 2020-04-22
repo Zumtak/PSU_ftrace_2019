@@ -14,7 +14,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-char *get_symbol_name(unsigned long addr, Elf *elf, Elf_Scn *scn, GElf_Shdr *shdr)
+static char *get_symbol_name(unsigned long addr, Elf *elf, Elf_Scn *scn,
+GElf_Shdr *shdr)
 {
     Elf_Data *data = elf_getdata(scn, NULL);
     GElf_Sym sym;
@@ -31,7 +32,7 @@ char *get_symbol_name(unsigned long addr, Elf *elf, Elf_Scn *scn, GElf_Shdr *shd
     return (NULL);
 }
 
-char *search(Elf *elf, unsigned long addr)
+static char *search(Elf *elf, unsigned long addr)
 {
     Elf_Scn *scn = elf_nextscn(elf, NULL);
     GElf_Shdr shdr;
@@ -54,7 +55,7 @@ char *search(Elf *elf, unsigned long addr)
     return (func_name);
 }
 
-Elf *setup_elf(int fd)
+static Elf *setup_elf(int fd)
 {
     Elf *elf = NULL;
 
@@ -74,7 +75,7 @@ Elf *setup_elf(int fd)
     return (elf);
 }
 
-int setup_file(char *file)
+static int setup_file(char *file)
 {
     int fd = open(file, O_RDONLY, 0);
 
@@ -98,6 +99,8 @@ char *find_symbol(char *file, unsigned long long int addr)
     if (elf == NULL)
         return (NULL);
     func_name = search(elf, addr);
+    if (func_name != NULL)
+        func_name = strdup(func_name);
     elf_end(elf);
     close(fd);
     return (func_name);
