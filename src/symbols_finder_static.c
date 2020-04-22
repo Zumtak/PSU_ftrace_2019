@@ -93,8 +93,10 @@ char *find_symbol(char *file, unsigned long long int addr)
         elf = setup_elf(fd);
     else
         return (NULL);
-    if (elf == NULL)
+    if (elf == NULL) {
+        close(fd);
         return (NULL);
+    }
     func_name = search(elf, addr);
     if (func_name != NULL)
         func_name = strdup(func_name);
