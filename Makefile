@@ -29,7 +29,7 @@ NAME = ftrace
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	gcc -o $(NAME) $(CFLAGS) $(OBJ)
+	gcc -o $(NAME) $(CFLAGS) $(OBJ) -lelf
 
 clean:
 	rm -rf $(OBJ)
