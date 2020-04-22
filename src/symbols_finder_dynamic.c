@@ -16,7 +16,8 @@
 #include <errno.h>
 #include "ftrace.h"
 
-static unsigned long long int get_offset_addr(char *line, unsigned long long int addr)
+static unsigned long long int get_offset_addr(char *line,
+unsigned long long int addr)
 {
     unsigned long long int low_addr = 0;
 
