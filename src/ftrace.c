@@ -15,11 +15,27 @@
 
 #define UINT_MAX 4294967295
 
+void display_function(pid_t child_pid, struct user_regs_struct regs,
+char *file_path, int status)
+{
+    char *fname = NULL;
+
+    ptrace(PTRACE_SINGLESTEP, child_pid, NULL, NULL);
+    wait(&status);
+    ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
+    fname = find_symbol(file_path, regs.rip);
+    if (fname == NULL)
+        fname = dyn_find_symbol(child_pid, regs.rip);
+    if (fname == NULL)
+        dprintf(2, "func_0x%llx@%s\n", regs.rip, file_path);
+    else
+        dprintf(2, "Entering function %s at Ox%llx\n", fname, regs.rip);
+}
+
 static int tracer_fork(pid_t child_pid, char *file_path)
 {
     struct user_regs_struct regs = {0};
     int status = 1;
-    char *fname = NULL;
 
     while (!WIFEXITED(status)) {
         ptrace(PTRACE_SINGLESTEP, child_pid, NULL, NULL);
@@ -30,18 +46,10 @@ static int tracer_fork(pid_t child_pid, char *file_path)
         WSTOPSIG(status) != SIGTRAP)
             break;
         ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
-        unsigned long opcode = ptrace(PTRACE_PEEKTEXT, child_pid, regs.rip, regs);
+        unsigned long opcode = ptrace(PTRACE_PEEKTEXT, child_pid, regs.rip,
+        regs);
         if (get_calltype(opcode) == CALL) {
-            ptrace(PTRACE_SINGLESTEP, child_pid, NULL, NULL);
-            wait(&status);
-            ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
-            fname = find_symbol(file_path, regs.rip);
-            if (fname == NULL)
-                fname = dyn_find_symbol(child_pid, regs.rip);
-            if (fname == NULL)
-                dprintf(2, "func_0x%llx@%s\n", regs.rip, file_path);
-            else
-                dprintf(2, "Entering function %s at Ox%llx\n", fname, regs.rip);
+            display_function(child_pid, regs, file_path, status);
         }
         if (regs.orig_rax != -1) {
             display(regs, child_pid);
