@@ -13,7 +13,7 @@
 #include <sys/wait.h>
 #include "ftrace.h"
 
-call_type get_calltype(unsigned long opcode)
+call_type_t get_calltype(unsigned long opcode)
 {
     if (((opcode & 0x0000FFFF) == 0x0000050f)) {
         return SYSCALL;

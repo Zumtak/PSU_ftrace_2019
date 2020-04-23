@@ -40,7 +40,7 @@ enum call_type {
     RETN = 3,
     RETF = 4
 };
-typedef enum call_type call_type;
+typedef enum call_type call_type_t;
 
 arguments_t* initialize_arguments();
 void display_arguments_struct(arguments_t* arguments);
@@ -51,7 +51,7 @@ void display_str(struct user_regs_struct regs, pid_t pid);
 
 int ftrace(arguments_t *args);
 
-call_type get_calltype(unsigned long opcode);
+call_type_t get_calltype(unsigned long opcode);
 
 const system_function_t *get_instruction(int syscall);
 
