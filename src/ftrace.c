@@ -27,11 +27,10 @@ char *file_path, int status)
     if (fname == NULL)
         fname = dyn_find_symbol(child_pid, regs.rip);
     if (fname == NULL) {
-        fname = malloc(20 + strlen(file_path));
+        fname = malloc(sizeof(char) * (21 + strlen(file_path)));
         sprintf(fname, "func_0x%llx@%s", regs.rip, file_path);
         dprintf(2, "%s\n", fname);
-    }
-    else {
+    } else {
         dprintf(2, "Entering function %s at Ox%llx\n", fname, regs.rip);
     }
     return fname;

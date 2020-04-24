@@ -14,7 +14,7 @@ void add_function_list(char *function_name, function_list_t **list)
     if (list == NULL) {
         return;
     }
-    function_list_t *new_function = malloc(sizeof(function_list_t *));
+    function_list_t *new_function = malloc(sizeof(function_list_t));
     if (new_function == NULL) {
         return;
     }
