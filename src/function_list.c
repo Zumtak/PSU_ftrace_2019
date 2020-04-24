@@ -56,7 +56,7 @@ void delete_all_list(function_list_t **list)
     }
     function_list_t *temp = *list;
     function_list_t *next = NULL;
-    while(temp != NULL) {
+    while (temp != NULL) {
         next = temp->next;
         free(temp);
         temp = next;
