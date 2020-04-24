@@ -26,6 +26,8 @@ arguments_t *initialize_arguments(char **env)
 
 void display_arguments_struct(arguments_t *arguments)
 {
+    int idx = 0;
+
     if (arguments == NULL) {
         return;
     }
@@ -34,7 +36,6 @@ void display_arguments_struct(arguments_t *arguments)
     if (arguments->program_name != NULL)
         printf("program_name: %s\n", arguments->program_name);
     printf("argc: %d\n", arguments->argc);
-    int idx = 0;
     while (idx != arguments->argc) {
         printf("arg[%d]: %s\n", idx, arguments->argv[idx]);
         ++idx;
