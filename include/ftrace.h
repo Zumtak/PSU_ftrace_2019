@@ -42,7 +42,6 @@ enum call_type {
 };
 typedef enum call_type call_type_t;
 
-
 typedef struct function_list_s {
     char *function;
     struct function_list_s *next;
@@ -60,9 +59,10 @@ arguments_t *manage_arguments(int argc, char **argv, char **envp);
 
 void display(struct user_regs_struct regs, pid_t pid);
 void display_str(struct user_regs_struct regs, pid_t pid);
+void display_signals(int signal);
 
 int ftrace(arguments_t *args);
-bool check_exit_loop(int status);
+bool check_exit_signal(int status);
 
 void process_call(int status, arguments_t *args, struct user_regs_struct regs,
 function_list_t **list);

@@ -48,7 +48,7 @@ static int tracer_fork(arguments_t *args)
     while (!WIFEXITED(status)) {
         ptrace(PTRACE_SINGLESTEP, args->pid, NULL, NULL);
         wait(&status);
-        if (!check_exit_loop(status))
+        if (!check_exit_signal(status))
             break;
         ptrace(PTRACE_GETREGS, args->pid, 0, &regs);
         process_call(status, args, regs, list);
