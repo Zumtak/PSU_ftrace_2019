@@ -22,11 +22,9 @@ call_type_t get_calltype(unsigned long opcode)
     ((opcode & 0xFF) == 0xe8)) {
         return CALL;
     }
-    if ((opcode & 0xFF) == 0xC2 || (opcode & 0xFF) == 0xC3) {
-        return RETN;
-    }
-    if ((opcode & 0xFF) == 0xCA  || (opcode & 0xFF) == 0xCB) {
-        return RETF;
+    if ((opcode & 0xFF) == 0xC2 || (opcode & 0xFF) == 0xC3 ||
+    (opcode & 0xFF) == 0xCA  || (opcode & 0xFF) == 0xCB) {
+        return RET;
     }
     return NONE;
 }

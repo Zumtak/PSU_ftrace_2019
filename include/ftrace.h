@@ -37,10 +37,21 @@ enum call_type {
     NONE = 0,
     SYSCALL = 1,
     CALL = 2,
-    RETN = 3,
-    RETF = 4
+    RET = 3
 };
 typedef enum call_type call_type_t;
+
+
+typedef struct function_list_s {
+    char *function;
+    struct function_list_s *next;
+} function_list_t;
+
+void add_function_list(char *function_name, function_list_t **list);
+void display_curr_function_list(function_list_t **list);
+void pop_function_list(function_list_t **list);
+void delete_all_list(function_list_t **list);
+
 
 arguments_t* initialize_arguments();
 void display_arguments_struct(arguments_t* arguments);
