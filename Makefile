@@ -13,6 +13,8 @@ SRC 	= 	src/main.c \
 			src/symbols_finder_static.c \
 			src/symbols_finder_dynamic.c \
 			src/function_list.c \
+			src/check_exit_loop.c		\
+			src/process_call.c			\
 			lib/free_d_array.c \
 
 INCLUDE =	include/

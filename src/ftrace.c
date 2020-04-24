@@ -38,7 +38,7 @@ char *file_path, int status)
     return fname;
 }
 
-static int tracer_fork(pid_t child_pid, char *file_path)
+static int tracer_fork(arguments_t *args)
 {
     struct user_regs_struct regs = {0};
     int status = 1;
@@ -46,27 +46,12 @@ static int tracer_fork(pid_t child_pid, char *file_path)
     function_list_t **list = malloc(sizeof(function_list_t *));
     *list = NULL;
     while (!WIFEXITED(status)) {
-        ptrace(PTRACE_SINGLESTEP, child_pid, NULL, NULL);
+        ptrace(PTRACE_SINGLESTEP, args->pid, NULL, NULL);
         wait(&status);
-        if (WIFSIGNALED(status))
+        if (!check_exit_loop(status))
             break;
-        if (WIFSTOPPED(status) && WSTOPSIG(status) != SIGSTOP &&
-        WSTOPSIG(status) != SIGTRAP)
-            break;
-        ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
-        unsigned long opcode = ptrace(PTRACE_PEEKTEXT, child_pid, regs.rip,
-        regs);
-        call_type_t call_type = get_calltype(opcode);
-        if (call_type == CALL) {
-            char *function_name = display_function(child_pid, regs, file_path, status);
-            add_function_list(function_name, list);
-        } else if (call_type == RET && *list != NULL) {
-            dprintf(2, "Leaving function %s\n", (*list)->function);
-            pop_function_list(list);
-        }
-        if (regs.orig_rax != -1) {
-            display(regs, child_pid);
-        }
+        ptrace(PTRACE_GETREGS, args->pid, 0, &regs);
+        process_call(status, args, regs, list);
     }
     status = WEXITSTATUS(status);
     delete_all_list(list);
@@ -84,7 +69,8 @@ static int fork_n_trace(arguments_t *args)
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
         return (execve(args->program_path, args->argv, args->envp));
     }
-    return (tracer_fork(child_pid, args->program_path));
+    args->pid = child_pid;
+    return (tracer_fork(args));
 }
 
 int ftrace(arguments_t *args)

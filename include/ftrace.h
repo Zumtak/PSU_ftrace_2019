@@ -8,6 +8,7 @@
 #ifndef ftrace_H_
 #define ftrace_H_
 
+#include <stdbool.h>
 #include <sys/user.h>
 #include <unistd.h>
 #include "environment.h"
@@ -61,8 +62,13 @@ void display(struct user_regs_struct regs, pid_t pid);
 void display_str(struct user_regs_struct regs, pid_t pid);
 
 int ftrace(arguments_t *args);
+bool check_exit_loop(int status);
 
+void process_call(int status, arguments_t *args, struct user_regs_struct regs,
+function_list_t **list);
 call_type_t get_calltype(unsigned long opcode);
+char *display_function(pid_t child_pid, struct user_regs_struct regs,
+char *file_path, int status);
 
 const system_function_t *get_instruction(int syscall);
 
