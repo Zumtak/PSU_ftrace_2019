@@ -60,7 +60,7 @@ static int tracer_fork(pid_t child_pid, char *file_path)
             char *function_name = display_function(child_pid, regs, file_path, status);
             add_function_list(function_name, list);
         } else if (call_type == RET && *list != NULL) {
-            dprintf(2, "leaving function %s\n", (*list)->function);
+            dprintf(2, "Leaving function %s\n", (*list)->function);
             pop_function_list(list);
         }
         if (regs.orig_rax != -1) {
